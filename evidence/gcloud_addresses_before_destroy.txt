@@ -1,0 +1,2 @@
+﻿NAME                                    ADDRESS/RANGE  TYPE      PURPOSE   NETWORK  REGION    SUBNET  STATUS
+nat-auto-ip-1154798-1-1781763235013633  34.139.93.243  EXTERNAL  NAT_AUTO           us-east1          IN_USE

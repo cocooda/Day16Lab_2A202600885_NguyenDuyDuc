@@ -1,0 +1,8 @@
+﻿api_endpoint = "http://8.232.141.3/v1"
+gpu_node_name = "ai-cpu-node"
+gpu_node_zone = "us-east1-b"
+iap_ssh_command = "gcloud compute ssh ai-cpu-node --zone=us-east1-b --tunnel-through-iap --project=gen-lang-client-0390165137"
+instance_name = "ai-cpu-node"
+instance_private_ip = "10.0.0.2"
+instance_zone = "us-east1-b"
+load_balancer_ip = "8.232.141.3"

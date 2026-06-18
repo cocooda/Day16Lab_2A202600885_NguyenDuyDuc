@@ -1,0 +1,2 @@
+﻿NAME                  REGION  IP_ADDRESS   IP_PROTOCOL  TARGET
+vllm-forwarding-rule          8.232.141.3  TCP          vllm-http-proxy

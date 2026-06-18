@@ -1,8 +1,20 @@
 #!/bin/bash
 set -e
 
-# Install Docker
 apt-get update -y
+
+if [ "${is_gpu_mode}" != "true" ]; then
+  apt-get install -y python3 python3-pip python3-venv unzip
+  mkdir -p /opt/lab16
+  cat >/opt/lab16/README_CPU_STARTUP.txt <<'EOF'
+CPU fallback VM is ready.
+Copy benchmark.py to ~/ml-benchmark/ and run terraform-gcp/scripts/run_cpu_benchmark.sh.
+Kaggle credentials belong only in ~/.kaggle/kaggle.json on this VM.
+EOF
+  exit 0
+fi
+
+# Install Docker for GPU/vLLM mode.
 apt-get install -y docker.io
 systemctl enable docker
 systemctl start docker

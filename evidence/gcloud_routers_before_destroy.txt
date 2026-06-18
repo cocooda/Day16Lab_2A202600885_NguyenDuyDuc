@@ -1,0 +1,2 @@
+﻿NAME       REGION    NETWORK
+ai-router  us-east1  ai-vpc

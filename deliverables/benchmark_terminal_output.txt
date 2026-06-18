@@ -1,0 +1,16 @@
+
+LAB 16 CPU FALLBACK LIGHTGBM BENCHMARK
+======================================
+Data load time:        1.2585 s
+Training time:         0.6076 s
+Best iteration:        14
+AUC-ROC:               0.954958
+Accuracy:              0.993101
+F1-score:              0.306878
+Precision:             0.185501
+Recall:                0.887755
+1-row latency:         1.2958 ms
+1000-row throughput:   766409.2 rows/s
+Result JSON:           /home/bachduc_june_gmail_com/ml-benchmark/benchmark_result.json
+======================================
+

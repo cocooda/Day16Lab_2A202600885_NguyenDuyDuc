@@ -1,3 +1,10 @@
+locals {
+  is_gpu_mode   = var.gpu_count > 0
+  instance_name = local.is_gpu_mode ? "ai-gpu-node" : "ai-cpu-node"
+  instance_tag  = "ai-node"
+  boot_image    = local.is_gpu_mode ? "projects/deeplearning-platform-release/global/images/family/common-cu121-debian-11" : "projects/debian-cloud/global/images/family/debian-12"
+}
+
 # 1. VPC Network
 resource "google_compute_network" "ai_vpc" {
   name                    = "ai-vpc"
@@ -35,7 +42,7 @@ resource "google_compute_router_nat" "nat" {
   }
 }
 
-# 5. Firewall: Allow IAP SSH (TCP 22) to GPU node
+# 5. Firewall: Allow IAP SSH (TCP 22) to AI node
 resource "google_compute_firewall" "allow_iap_ssh" {
   name    = "allow-iap-ssh"
   network = google_compute_network.ai_vpc.name
@@ -47,7 +54,7 @@ resource "google_compute_firewall" "allow_iap_ssh" {
 
   # IAP's IP range for TCP forwarding
   source_ranges = ["35.235.240.0/20"]
-  target_tags   = ["gpu-node"]
+  target_tags   = [local.instance_tag]
 }
 
 # 6. Firewall: Allow Load Balancer health checks and traffic on port 8000
@@ -62,13 +69,13 @@ resource "google_compute_firewall" "allow_lb_healthcheck" {
 
   # GCP Load Balancer health check IP ranges
   source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
-  target_tags   = ["gpu-node"]
+  target_tags   = [local.instance_tag]
 }
 
-# 7. Service Account for GPU Node (least privilege)
+# 7. Service Account for AI Node (least privilege)
 resource "google_service_account" "gpu_node_sa" {
-  account_id   = "gpu-node-sa"
-  display_name = "GPU Node Service Account"
+  account_id   = "ai-node-sa"
+  display_name = "AI Node Service Account"
 }
 
 resource "google_project_iam_member" "gpu_node_log_writer" {
@@ -83,17 +90,16 @@ resource "google_project_iam_member" "gpu_node_metric_writer" {
   member  = "serviceAccount:${google_service_account.gpu_node_sa.email}"
 }
 
-# 8. GPU Node (Compute Engine VM in Private Subnet)
+# 8. AI Node (Compute Engine VM in Private Subnet)
 resource "google_compute_instance" "gpu_node" {
-  name         = "ai-gpu-node"
+  name         = local.instance_name
   machine_type = var.machine_type
   zone         = var.zone
-  tags         = ["gpu-node"]
+  tags         = [local.instance_tag]
 
   boot_disk {
     initialize_params {
-      # Deep Learning VM image with CUDA pre-installed
-      image = "projects/deeplearning-platform-release/global/images/family/common-cu121-debian-11"
+      image = local.boot_image
       size  = 100
       type  = "pd-ssd"
     }
@@ -105,13 +111,16 @@ resource "google_compute_instance" "gpu_node" {
     # No access_config block = no public IP (private only)
   }
 
-  guest_accelerator {
-    type  = var.gpu_type
-    count = var.gpu_count
+  dynamic "guest_accelerator" {
+    for_each = local.is_gpu_mode ? [1] : []
+    content {
+      type  = var.gpu_type
+      count = var.gpu_count
+    }
   }
 
   scheduling {
-    on_host_maintenance = "TERMINATE"
+    on_host_maintenance = local.is_gpu_mode ? "TERMINATE" : "MIGRATE"
     automatic_restart   = true
   }
 
@@ -121,8 +130,9 @@ resource "google_compute_instance" "gpu_node" {
   }
 
   metadata_startup_script = templatefile("${path.module}/user_data.sh", {
-    hf_token = var.hf_token
-    model_id = var.model_id
+    hf_token    = var.hf_token
+    model_id    = var.model_id
+    is_gpu_mode = local.is_gpu_mode
   })
 
   metadata = {

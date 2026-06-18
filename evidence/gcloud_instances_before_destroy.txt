@@ -1,0 +1,2 @@
+﻿NAME         ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP  STATUS
+ai-cpu-node  us-east1-b  n2-standard-8               10.0.0.2                  RUNNING

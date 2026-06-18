@@ -16,10 +16,10 @@ variable "zone" {
 }
 
 variable "hf_token" {
-  description = "Hugging Face Token for gated models (like Gemma)"
+  description = "Hugging Face token for GPU/vLLM mode. Use dummy for CPU fallback."
   type        = string
   sensitive   = true
-  default     = ""
+  default     = "dummy"
 }
 
 variable "model_id" {
@@ -29,9 +29,9 @@ variable "model_id" {
 }
 
 variable "machine_type" {
-  description = "GCE Machine Type for the GPU node"
+  description = "GCE machine type. Use n2-standard-8 for CPU fallback."
   type        = string
-  default     = "n1-standard-4"
+  default     = "n2-standard-8"
 }
 
 variable "gpu_type" {
@@ -41,7 +41,12 @@ variable "gpu_type" {
 }
 
 variable "gpu_count" {
-  description = "Number of GPUs to attach"
+  description = "Number of GPUs to attach. Set to 0 for CPU fallback."
   type        = number
-  default     = 1
+  default     = 0
+
+  validation {
+    condition     = var.gpu_count >= 0
+    error_message = "gpu_count must be 0 or greater."
+  }
 }

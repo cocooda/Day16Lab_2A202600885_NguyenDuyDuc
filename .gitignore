@@ -20,3 +20,10 @@ lab-key.pub
 # Environment Variables
 .env
 .env.local
+
+# Local credentials and generated lab evidence archives
+kaggle.json
+**/kaggle.json
+application_default_credentials.json
+*credentials*.json
+lab16_cpu_evidence.zip
