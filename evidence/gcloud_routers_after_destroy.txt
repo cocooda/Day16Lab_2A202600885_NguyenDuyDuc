@@ -1,0 +1,7 @@
+﻿gcloud.cmd : Listed 0 items.
+At line:2 char:1
++ & 'C:\Users\Admin\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Listed 0 items.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
